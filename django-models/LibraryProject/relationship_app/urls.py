@@ -2,7 +2,13 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
 from . import views
-from .views import LibraryDetailView, list_books
+from .views import (
+    LibraryDetailView,
+    admin_view,
+    librarian_view,
+    list_books,
+    member_view,
+)
 
 urlpatterns = [
     path("books/", list_books, name="list_books"),
@@ -18,4 +24,7 @@ urlpatterns = [
         name="logout",
     ),
     path("register/", views.register, name="register"),
+    path("admin-dashboard/", admin_view, name="admin_dashboard"),
+    path("librarian-dashboard/", librarian_view, name="librarian_dashboard"),
+    path("member-dashboard/", member_view, name="member_dashboard"),
 ]
