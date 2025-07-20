@@ -2,13 +2,12 @@ from django.contrib.auth import login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import (
     login_required,
-    permission_required,
     user_passes_test,
 )
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import redirect, render
 from django.views.generic.detail import DetailView
-
+from django.contrib.auth.decorators import permission_required
 from .models import Book, Library, UserProfile
 
 
