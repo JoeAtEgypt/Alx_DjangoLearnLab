@@ -12,9 +12,9 @@ def get_books_by_author(author_id):
 
 
 # List all books in a library
-def get_books_in_library(library_id):
+def get_books_in_library(library_name):
     try:
-        library = Library.objects.get(id=library_id)
+        library = Library.objects.get(name=library_name)
         books = (
             library.books.all()
         )  # Assuming a ManyToMany or ForeignKey from Book to Library
