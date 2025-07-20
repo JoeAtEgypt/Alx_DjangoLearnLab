@@ -21,13 +21,13 @@ def get_books_in_library(library_name):
         return books
     except Library.DoesNotExist:
         return []
-
+    
 
 # Retrieve the librarian for a library
 def get_librarian_for_library(library_id):
     try:
         library = Library.objects.get(id=library_id)
-        librarian = Librarian.objects.get(library=library)s
+        librarian = Librarian.objects.get(library=library)
         return librarian
     except Library.DoesNotExist:
         return None
