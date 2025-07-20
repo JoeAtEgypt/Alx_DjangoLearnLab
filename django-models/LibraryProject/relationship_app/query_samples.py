@@ -2,9 +2,9 @@ from relationship_app.models import Author, Book, Library
 
 
 # Query all books by a specific author
-def get_books_by_author(author_id):
+def get_books_by_author(author_name):
     try:
-        author = Author.objects.get(id=author_id)
+        author = Author.objects.get(name=author_name)
         books = Book.objects.filter(author=author)
         return books
     except Author.DoesNotExist:
