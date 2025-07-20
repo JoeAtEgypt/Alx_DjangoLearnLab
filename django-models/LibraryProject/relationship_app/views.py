@@ -1,6 +1,10 @@
 from django.contrib.auth import login
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import (
+    login_required,
+    permission_required,
+    user_passes_test,
+)
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import redirect, render
 from django.views.generic.detail import DetailView
@@ -13,15 +17,73 @@ def list_books(request):
     books = Book.objects.all()
     return render(request, "relationship_app/list_books.html", {"books": books})
 
+
+# Add Book view
+@login_required
+@permission_required("relationship_app.can_add_book", raise_exception=True)
+def add_book(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        author_id = request.POST.get("author")
+        if title and author_id:
+            from .models import Author, Book
+
+            author = Author.objects.get(id=author_id)
+            Book.objects.create(title=title, author=author)
+            return redirect("list_books")
+    from .models import Author
+
+    authors = Author.objects.all()
+    return render(request, "relationship_app/add_book.html", {"authors": authors})
+
+
+# Edit Book view
+@login_required
+@permission_required("relationship_app.can_change_book", raise_exception=True)
+def edit_book(request, pk):
+    from .models import Author, Book
+
+    book = Book.objects.get(pk=pk)
+    if request.method == "POST":
+        title = request.POST.get("title")
+        author_id = request.POST.get("author")
+        if title and author_id:
+            author = Author.objects.get(id=author_id)
+            book.title = title
+            book.author = author
+            book.save()
+            return redirect("list_books")
+    authors = Author.objects.all()
+    return render(
+        request, "relationship_app/edit_book.html", {"book": book, "authors": authors}
+    )
+
+
+# Delete Book view
+@login_required
+@permission_required("relationship_app.can_delete_book", raise_exception=True)
+def delete_book(request, pk):
+    from .models import Book
+
+    book = Book.objects.get(pk=pk)
+    if request.method == "POST":
+        book.delete()
+        return redirect("list_books")
+    return render(request, "relationship_app/delete_book.html", {"book": book})
+
+
 # Role check helpers
 def is_admin(user):
-    return hasattr(user, 'userprofile') and user.userprofile.role == "Admin"
+    return hasattr(user, "userprofile") and user.userprofile.role == "Admin"
+
 
 def is_librarian(user):
-    return hasattr(user, 'userprofile') and user.userprofile.role == "Librarian"
+    return hasattr(user, "userprofile") and user.userprofile.role == "Librarian"
+
 
 def is_member(user):
-    return hasattr(user, 'userprofile') and user.userprofile.role == "Member"
+    return hasattr(user, "userprofile") and user.userprofile.role == "Member"
+
 
 # Admin view
 @login_required
@@ -29,11 +91,13 @@ def is_member(user):
 def admin_view(request):
     return render(request, "relationship_app/admin_view.html")
 
+
 # Librarian view
 @login_required
 @user_passes_test(is_librarian)
 def librarian_view(request):
     return render(request, "relationship_app/librarian_view.html")
+
 
 # Member view
 @login_required
