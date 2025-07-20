@@ -1,4 +1,4 @@
-from relationship_app.models import Author, Book, Library
+from relationship_app.models import Author, Book, Library, Librarian
 
 
 # Query all books by a specific author
@@ -27,7 +27,7 @@ def get_books_in_library(library_name):
 def get_librarian_for_library(library_id):
     try:
         library = Library.objects.get(id=library_id)
-        librarian = library.librarian  # Assuming a ForeignKey from Library to Librarian
+        librarian = Librarian.objects.get(library=library)s
         return librarian
     except Library.DoesNotExist:
         return None
